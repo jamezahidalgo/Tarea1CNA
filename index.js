@@ -28,7 +28,6 @@ const jwtGenerator = (userId) => {
 }
 
 // ENCRYPT PASSWORD
-
 const bcrypt = require("bcrypt")
 
 const encrypt = async (password) => {
@@ -53,12 +52,13 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 // registrar usuario
 app.post("/register", async (req, res) => {
   // #swagger.description = 'Endpoint para registrar un nuevo usuario en la  plataforma'
-
+  console.log("Intentando registrar")
   try {
     // 1. destructurar req.body para obtner (name, email, password)
     const { name, email, password } = req.body
+    // Inicio insercion
 
-
+    // Fin de insercion
     // 2. verificar si el usuario existe (si existe lanzar un error, con throw)
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email])
 
@@ -83,13 +83,13 @@ app.post("/register", async (req, res) => {
 })
 
 // verificar usuario
-app.options("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   // #swagger.description = 'Endpoint para obtener un token de sesión para el usuario'
   try {
     // 1. destructurizar req.body
     const { email, password } = req.body
 
-
+    console.log("email :", email)
     // 2. verificar si el usuario no existe (si no emitiremos un error)
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email])
 
@@ -114,7 +114,7 @@ app.options("/login", async (req, res) => {
 })
 
 // List all users
-app.options("/users", async (req, res) => {
+app.get("/users", async (req, res) => {
   // #swagger.description = 'Endpoint para listar todos los usuarios registrados en el sistema'
   try {
     const allUsers = await pool.query(
@@ -167,10 +167,11 @@ app.get("/verify", authorization, async (req, res) => {
 // EL EJERCICIO EMPIEZA DESDE ESTE PUNTO
 
 // create a todo
-app.options("/todos", authorization, async (req, res) => {
+app.post("/todos", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para crear una tarea, pertenece al usuario registrado en el token de sesión'
   try {
     const { description } = req.body
+    console.log(req.user)
     const newTodo = await pool.query(
       "INSERT INTO todos(description, user_id) VALUES($1, $2) RETURNING *",
       [description, req.user]
@@ -183,7 +184,7 @@ app.options("/todos", authorization, async (req, res) => {
 })
 
 //list all todos
-app.options("/todos", authorization, async (req, res) => {
+app.get("/todos", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para listar todas las tareas que pertenecen al usuario registrado en el token de sesión'
   try {
     const allTodos = await pool.query(
@@ -198,7 +199,7 @@ app.options("/todos", authorization, async (req, res) => {
 })
 
 // retrieve a todo by id
-app.options("/todos/:id", authorization, async (req, res) => {
+app.get("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para obtener una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
     const { id } = req.params
@@ -214,7 +215,7 @@ app.options("/todos/:id", authorization, async (req, res) => {
 })
 
 // update a todo
-app.options("/todos/:id", authorization, async (req, res) => {
+app.post("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para actualizar la descripción de una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
     const { id } = req.params
@@ -232,7 +233,7 @@ app.options("/todos/:id", authorization, async (req, res) => {
 })
 
 //delete a todo
-app.options("/todos/:id", authorization, async (req, res) => {
+app.post("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para borrar una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
     const { id } = req.params
