@@ -56,9 +56,7 @@ app.post("/register", async (req, res) => {
   try {
     // 1. destructurar req.body para obtner (name, email, password)
     const { name, email, password } = req.body
-    // Inicio insercion
 
-    // Fin de insercion
     // 2. verificar si el usuario existe (si existe lanzar un error, con throw)
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email])
 
