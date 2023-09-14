@@ -200,7 +200,9 @@ app.get("/todos", authorization, async (req, res) => {
 app.get("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para obtener una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
+    
     const { id } = req.params
+    console.log(req.user, id)
     const todo = await pool.query(
       "SELECT * FROM todos WHERE id = $1 and user_id = $2",
       [id, req.user]
@@ -213,7 +215,7 @@ app.get("/todos/:id", authorization, async (req, res) => {
 })
 
 // update a todo
-app.post("/todos/:id", authorization, async (req, res) => {
+app.patch("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para actualizar la descripción de una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
     const { id } = req.params
@@ -231,7 +233,7 @@ app.post("/todos/:id", authorization, async (req, res) => {
 })
 
 //delete a todo
-app.post("/todos/:id", authorization, async (req, res) => {
+app.delete("/todos/:id", authorization, async (req, res) => {
   // #swagger.description = 'Endpoint para borrar una tarea especifica y que pertenezca al usuario registrado en el token de sesión'
   try {
     const { id } = req.params
